@@ -10,6 +10,6 @@ public class Feedback {
     private Integer gender;
     private String id;
     private Integer parkingLotType;
-    private Boolean ePay;
+    private Integer ePay;
 
 }
