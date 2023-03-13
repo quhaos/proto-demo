@@ -21,7 +21,7 @@ public class HelloWorldController {
             consumes="application/x-protobuf;charset=UTF-8")
     public ResponseEntity addFeedback(@RequestBody FeedBackSchema.Feedback feedback){
         System.out.println("============= p2 interface ==================");
-        System.out.println(feedback);
+        System.out.printf("lifeCycleId:%d",feedback.getLifeCycleId());
         Feedback feedbackEntity = new Feedback();
         feedbackEntity.setGcId(feedback.getGcId());
         feedbackEntity.setGender(feedback.getGender().getNumber());
@@ -38,7 +38,7 @@ public class HelloWorldController {
             consumes="application/x-protobuf;charset=UTF-8")
     public ResponseEntity addFeedback(@RequestBody com.al.cc.java.p3.FeedBackSchema.Feedback feedback){
         System.out.println("============= p3 interface ==================");
-        System.out.println(feedback);
+        System.out.printf("lifeCycleId:%d",feedback.getLifeCycleId());
         Feedback feedbackEntity = new Feedback();
         feedbackEntity.setGcId(feedback.getGcId());
         feedbackEntity.setGender(feedback.getGender().getNumber());
