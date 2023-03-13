@@ -1,14 +1,21 @@
 package com.example.demo.controller;
 
 import com.al.cc.java.p2.FeedBackSchema;
+import com.example.demo.config.FeedbackEntityConverter;
 import com.example.demo.entity.Feedback;
+import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 @RestController
 public class HelloWorldController {
+    private FeedbackEntityConverter converter = new FeedbackEntityConverter();
+    private Map<String,BeanCopier> cache = new ConcurrentHashMap<>();
     @RequestMapping(value="/feedbackJson" ,
             method=RequestMethod.POST ,
             consumes="application/json;charset=UTF-8")
@@ -21,15 +28,17 @@ public class HelloWorldController {
             consumes="application/x-protobuf;charset=UTF-8")
     public ResponseEntity addFeedback(@RequestBody FeedBackSchema.Feedback feedback){
         System.out.println("============= p2 interface ==================");
-        System.out.printf("lifeCycleId:%d",feedback.getLifeCycleId());
+        System.out.printf("lifeCycleId:%d \n",feedback.getLifeCycleId());
         Feedback feedbackEntity = new Feedback();
-        feedbackEntity.setGcId(feedback.getGcId());
-        feedbackEntity.setGender(feedback.getGender().getNumber());
-        feedbackEntity.setLifeCycleId(feedback.getLifeCycleId());
-        feedbackEntity.setName(feedback.getName());
-        feedbackEntity.setEPay(feedback.getEPay()?1:0);
-        feedbackEntity.setParkingLotType(feedback.getParkingLotType().getNumber());
-        feedbackEntity.setId(feedback.getId());
+        String key = generateKey(FeedBackSchema.Feedback.class, Feedback.class);
+        BeanCopier beanCopier;
+        if(cache.containsKey(key)){
+            beanCopier = cache.get(key);
+        }else{
+            beanCopier = BeanCopier.create(FeedBackSchema.Feedback.class, Feedback.class, true);
+            cache.put(key,beanCopier);
+        }
+        beanCopier.copy(feedback,feedbackEntity,converter);
         System.out.println(feedbackEntity);
         return new ResponseEntity(HttpStatus.OK);
     }
@@ -38,17 +47,16 @@ public class HelloWorldController {
             consumes="application/x-protobuf;charset=UTF-8")
     public ResponseEntity addFeedback(@RequestBody com.al.cc.java.p3.FeedBackSchema.Feedback feedback){
         System.out.println("============= p3 interface ==================");
-        System.out.printf("lifeCycleId:%d",feedback.getLifeCycleId());
+        System.out.printf("lifeCycleId:%d \n",feedback.getLifeCycleId());
+        BeanCopier beanCopier = BeanCopier.create(com.al.cc.java.p3.FeedBackSchema.Feedback.class, Feedback.class, true);
         Feedback feedbackEntity = new Feedback();
-        feedbackEntity.setGcId(feedback.getGcId());
-        feedbackEntity.setGender(feedback.getGender().getNumber());
-        feedbackEntity.setLifeCycleId(feedback.getLifeCycleId());
-        feedbackEntity.setName(feedback.getName());
-        feedbackEntity.setEPay(feedback.getEPay()?1:0);
-        feedbackEntity.setParkingLotType(feedback.getParkingLotType().getNumber());
-        feedbackEntity.setId(feedback.getId());
+        beanCopier.copy(feedback,feedbackEntity,converter);
         System.out.println(feedbackEntity);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    private static String generateKey(Class<?> source, Class<?> target) {
+        return source.getName() + target.getName();
     }
 
 
