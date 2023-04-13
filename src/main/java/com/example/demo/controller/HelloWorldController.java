@@ -1,8 +1,12 @@
 package com.example.demo.controller;
 
 import com.al.cc.java.p2.FeedBackSchema;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.model.*;
 import com.example.demo.config.FeedbackEntityConverter;
 import com.example.demo.entity.Feedback;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanCopier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 public class HelloWorldController {
+    @Autowired
+    private DynamoDBMapper dynamoDBMapper;
+    @Autowired
+    private AmazonDynamoDB amazonDynamoDB;
     private FeedbackEntityConverter converter = new FeedbackEntityConverter();
     private Map<String,BeanCopier> cache = new ConcurrentHashMap<>();
     @RequestMapping(value="/feedbackJson" ,
@@ -40,6 +48,7 @@ public class HelloWorldController {
         }
         beanCopier.copy(feedback,feedbackEntity,converter);
         System.out.println(feedbackEntity);
+        dynamoDBMapper.save(feedbackEntity);
         return new ResponseEntity(HttpStatus.OK);
     }
     @RequestMapping(value="/feedbackPro3" ,
@@ -52,10 +61,17 @@ public class HelloWorldController {
         Feedback feedbackEntity = new Feedback();
         beanCopier.copy(feedback,feedbackEntity,converter);
         System.out.println(feedbackEntity);
+//        CreateTableResult resultFluent = amazonDynamoDB.createTable((new CreateTableRequest())
+//                .withTableName("Feedback")
+//                .withAttributeDefinitions(new AttributeDefinition("key", ScalarAttributeType.S))
+//                .withKeySchema(new KeySchemaElement("key", KeyType.HASH))
+//                .withProvisionedThroughput(new ProvisionedThroughput(1l,1l)));
+
+        dynamoDBMapper.save(feedbackEntity);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    private static String generateKey(Class<?> source, Class<?> target) {
+    private static String generateKey(Class<?> source , Class<?> target) {
         return source.getName() + target.getName();
     }
 

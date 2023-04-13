@@ -1,6 +1,8 @@
 package com.example.demo;
 
+import com.al.cc.java.p3.Pro1;
 import com.alibaba.fastjson.JSON;
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.example.demo.utils.CommonUtils;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.junit.jupiter.api.Test;
@@ -135,4 +137,28 @@ public  class Demo1ApplicationTests {
     }
 
 
+    @Test
+    public void test(){
+
+        com.al.cc.java.p3.FeedBackSchema.Feedback f1 = com.al.cc.java.p3.FeedBackSchema.Feedback.newBuilder()
+                .setLifeCycleId(1)
+                .build();
+        com.al.cc.java.p3.FeedBackSchema.Feedback f2 = com.al.cc.java.p3.FeedBackSchema.Feedback.newBuilder()
+                .setLifeCycleId(10000)
+                .build();
+        com.al.cc.java.p3.FeedBackSchema.Feedback f3 = com.al.cc.java.p3.FeedBackSchema.Feedback.newBuilder()
+                .setLifeCycleId(-10000)
+                .build();
+        com.al.cc.java.p3.FeedBackSchema.Feedback f4 = com.al.cc.java.p3.FeedBackSchema.Feedback.newBuilder()
+                .setLifeCycleIdSin(-10000)
+                .build();
+        com.al.cc.java.p3.FeedBackSchema.Feedback f5 = com.al.cc.java.p3.FeedBackSchema.Feedback.newBuilder()
+                .setLifeCycleId16(1)
+                .build();
+        System.out.println(f1.getSerializedSize());
+        System.out.println(f2.getSerializedSize());
+        System.out.println(f3.getSerializedSize());
+        System.out.println(f4.getSerializedSize());
+        System.out.println(f5.getSerializedSize());
+    }
 }
